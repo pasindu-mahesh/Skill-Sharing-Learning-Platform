@@ -1,0 +1,92 @@
+/* Page Background */
+body {
+    background: linear-gradient(135deg, #F3E5F5, #EDE7F6);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  /* Form Container */
+  .paper-container {
+    padding: 3rem;
+    max-width: 600px;
+    margin: 4rem auto;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(65, 29, 135, 0.2);
+    transition: transform 0.3s ease;
+  }
+  
+  .paper-container:hover {
+    transform: scale(1.01);
+  }
+  
+  /* Header */
+  .paper-container .MuiTypography-h5 {
+    color: #411D87;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    letter-spacing: 1px;
+  }
+  
+  /* Form Fields */
+  .MuiTextField-root {
+    width: 100%;
+  }
+  
+  .MuiTextField-root input,
+  .MuiTextField-root textarea {
+    border-radius: 8px;
+    padding: 12px;
+    background-color: #FAF8FF;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .MuiTextField-root input:focus,
+  .MuiTextField-root textarea:focus {
+    background-color: #fff;
+    box-shadow: 0 0 0 2px #B195EA44;
+  }
+  
+  /* Error Messages */
+  .MuiFormHelperText-root {
+    color: #f44336;
+    font-size: 0.875rem;
+  }
+  
+  /* Button */
+  .MuiButton-contained {
+    background-color: #B195EA;
+    color: #411D87;
+    font-weight: 600;
+    padding: 12px 24px;
+    text-transform: none;
+    border-radius: 8px;
+    display: block;
+    width: 100%;
+    margin-top: 1.5rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 12px rgba(177, 149, 234, 0.4);
+  }
+  
+  .MuiButton-contained:hover {
+    background-color: #9A80D6;
+    transform: translateY(-2px);
+  }
+  
+  /* Stack Layout */
+  .MuiStack-root {
+    gap: 1.75rem;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .paper-container {
+      padding: 2rem;
+      margin: 2rem 1rem;
+    }
+  
+    .MuiButton-contained {
+      padding: 10px 20px;
+    }
+  }
+  

@@ -1,0 +1,68 @@
+/* Card Container */
+.plan-card {
+    width: 100%;
+    max-width: 320px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(65, 29, 135, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+    background-color: #ffffff;
+  }
+  
+  .plan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 24px rgba(65, 29, 135, 0.25);
+  }
+  
+  /* Typography */
+  .plan-card-title {
+    color: #411D87;
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .plan-card-text {
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    margin-bottom: 0.25rem;
+  }
+  
+  /* Progress Bar Custom */
+  .plan-progress-bar {
+    margin: 1rem 0;
+    height: 8px;
+    border-radius: 6px;
+    background-color: #E0D8FA;
+  }
+  
+  .plan-progress-bar .MuiLinearProgress-bar {
+    background-color: #B195EA;
+  }
+  
+  /* Progress Text */
+  .plan-progress-text {
+    font-size: 0.75rem;
+    color: #411D87;
+    font-weight: 500;
+  }
+  
+  /* Icon Buttons */
+  .plan-action-buttons {
+    display: flex;
+    justify-content: flex-start;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .plan-action-buttons .MuiIconButton-root {
+    background-color: #F3EDFF;
+    color: #411D87;
+    transition: background-color 0.3s ease;
+  }
+  
+  .plan-action-buttons .MuiIconButton-root:hover {
+    background-color: #B195EA;
+    color: white;
+  }
+  
