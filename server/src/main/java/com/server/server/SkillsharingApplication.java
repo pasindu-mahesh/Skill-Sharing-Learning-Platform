@@ -1,13 +1,13 @@
-package com.server.server;
+package com.paf.skillsharing;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ServerApplication {
+public class SkillsharingApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ServerApplication.class, args);
+		SpringApplication.run(SkillsharingApplication.class, args);
 	}
 
 }
