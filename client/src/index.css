@@ -13,7 +13,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
 
-    --primary: 0 0% 9%;
+    --primary: 262 63% 75%;  /* This is #B195EA in HSL */
     --primary-foreground: 0 0% 98%;
 
     --secondary: 0 0% 96.1%;
@@ -71,7 +71,7 @@
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 0 0% 98%;
+    --primary: 262 63% 75%;  /* This is #B195EA in HSL */
     --primary-foreground: 0 0% 9%;
 
     --secondary: 0 0% 14.9%;
@@ -117,7 +117,7 @@
 }
 
 .gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent-foreground;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#B195EA] to-[#411D87];
 }
 
 .hero-gradient {
