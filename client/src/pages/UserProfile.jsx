@@ -115,7 +115,7 @@ const UserProfile = () => {
             {/* Profile Info */}
             <div className="flex-1 w-full text-center md:text-left">
               <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
-                <h1 className="text-2xl md:text-3xl font-bold">John Doe</h1>
+                <h1 className="text-2xl md:text-3xl font-bold">Pasindu Mahesh</h1>
                 <div className="flex flex-wrap gap-2 justify-center md:justify-start">
                   <Button 
                     variant={isFollowing ? "outline" : "default"}
