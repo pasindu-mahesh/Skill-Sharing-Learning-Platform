@@ -34,4 +34,19 @@ public class ProfileService {
         UUID uuid = UUID.fromString(id);
         repo.deleteById(uuid);
     }
+
+    public Profile updateProfilePictureUrl(UUID profileId, String imageUrl) {
+        return repo.findById(profileId)
+                .map(profile -> {
+                    System.out.println("Updating profile picture URL: " + imageUrl);
+                    profile.setProfilePictureUrl(imageUrl);
+                    Profile saved = repo.save(profile);
+                    System.out.println("Profile updated successfully");
+                    return saved;
+                })
+                .orElseThrow(() -> {
+                    System.err.println("Profile not found: " + profileId);
+                    return new RuntimeException("Profile not found");
+                });
+    }
 }

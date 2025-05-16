@@ -42,111 +42,55 @@ public class Profile {
     @Column(name = "following")
     private Integer following;
 
+    @Column(name = "profile_picture_url")
+    private String profilePictureUrl;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     public Profile() {
         this.id = UUID.randomUUID();
         this.createdAt = LocalDateTime.now();
-        this.followers = 0;  // initialize counts to 0
+        this.followers = 0;
         this.following = 0;
     }
 
-    // Getters and setters for all fields
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
 
-    public UUID getId() {
-        return id;
-    }
+    public UUID getUserId() { return userId; }
+    public void setUserId(UUID userId) { this.userId = userId; }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public UUID getUserId() {
-        return userId;
-    }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
 
-    public void setUserId(UUID userId) {
-        this.userId = userId;
-    }
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
 
-    public String getEmail() {
-        return email;
-    }
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
 
-    public String getUsername() {
-        return username;
-    }
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    public String getWebsite() { return website; }
+    public void setWebsite(String website) { this.website = website; }
 
-    public String getFirstName() {
-        return firstName;
-    }
+    public Integer getFollowers() { return followers; }
+    public void setFollowers(Integer followers) { this.followers = followers; }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+    public Integer getFollowing() { return following; }
+    public void setFollowing(Integer following) { this.following = following; }
 
-    public String getLastName() {
-        return lastName;
-    }
+    public String getProfilePictureUrl() { return profilePictureUrl; }
+    public void setProfilePictureUrl(String profilePictureUrl) { this.profilePictureUrl = profilePictureUrl; }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getBio() {
-        return bio;
-    }
-
-    public void setBio(String bio) {
-        this.bio = bio;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(String website) {
-        this.website = website;
-    }
-
-    public Integer getFollowers() {
-        return followers;
-    }
-
-    public void setFollowers(Integer followers) {
-        this.followers = followers;
-    }
-
-    public Integer getFollowing() {
-        return following;
-    }
-
-    public void setFollowing(Integer following) {
-        this.following = following;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }
