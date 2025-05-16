@@ -50,11 +50,26 @@ public class ProfileController {
                                                  @AuthenticationPrincipal String userId) {
         System.out.println("Authenticated user ID: " + userId);
         return service.getProfileById(id.toString()).map(existing -> {
-            profile.setId(id);                        // Use UUID directly
-            profile.setUserId(UUID.fromString(userId)); // Convert String to UUID here
-            return ResponseEntity.ok(service.createOrUpdateProfile(profile));
+            // Only update fields explicitly from the request
+            existing.setEmail(profile.getEmail());
+            existing.setUsername(profile.getUsername());
+            existing.setFirstName(profile.getFirstName());
+            existing.setLastName(profile.getLastName());
+
+            // New fields
+            existing.setPhone(profile.getPhone());
+            existing.setBio(profile.getBio());
+            existing.setWebsite(profile.getWebsite());
+            existing.setFollowers(profile.getFollowers());
+            existing.setFollowing(profile.getFollowing());
+
+            existing.setUserId(UUID.fromString(userId)); // keep the authenticated user ID consistent
+
+            Profile updatedProfile = service.createOrUpdateProfile(existing);
+            return ResponseEntity.ok(updatedProfile);
         }).orElse(ResponseEntity.notFound().build());
     }
+
 
     // Delete profile - requires authentication
     @DeleteMapping("/{id}")

@@ -27,15 +27,32 @@ public class Profile {
     @Column(name = "last_name")
     private String lastName;
 
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "bio", length = 1024)
+    private String bio;
+
+    @Column(name = "website")
+    private String website;
+
+    @Column(name = "followers")
+    private Integer followers;
+
+    @Column(name = "following")
+    private Integer following;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     public Profile() {
         this.id = UUID.randomUUID();
         this.createdAt = LocalDateTime.now();
+        this.followers = 0;  // initialize counts to 0
+        this.following = 0;
     }
 
-    // Getters and setters
+    // Getters and setters for all fields
 
     public UUID getId() {
         return id;
@@ -83,6 +100,46 @@ public class Profile {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public Integer getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(Integer followers) {
+        this.followers = followers;
+    }
+
+    public Integer getFollowing() {
+        return following;
+    }
+
+    public void setFollowing(Integer following) {
+        this.following = following;
     }
 
     public LocalDateTime getCreatedAt() {
