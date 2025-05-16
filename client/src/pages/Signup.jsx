@@ -12,37 +12,61 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
 
   const handleSignup = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    const form = e.target;
-    const firstName = form.firstName.value.trim();
-    const lastName = form.lastName.value.trim();
-    const username = form.username.value.trim();
-    const email = form.email.value.trim();
-    const password = form.password.value;
+  const form = e.target;
+  const firstName = form.firstName.value.trim();
+  const lastName = form.lastName.value.trim();
+  const username = form.username.value.trim();
+  const email = form.email.value.trim();
+  const password = form.password.value;
 
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { firstName, lastName, username },
+  try {
+    // Signup user
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { firstName, lastName, username },
+      },
+    });
+
+    if (error) {
+      toast.error(error.message);
+      setLoading(false);
+      return;
+    }
+
+    const user = data.user;
+
+    if (user) {
+      // Insert into profiles table
+      const { error: profileError } = await supabase.from('profiles').insert([
+        {
+          id: user.id,  // must match auth user id
+          first_name: firstName,
+          last_name: lastName,
+          username: username,
+          email: email, // optional duplicate for easy querying
+          created_at: new Date().toISOString(),
         },
-      });
+      ]);
 
-      if (error) {
-        toast.error(error.message);
+      if (profileError) {
+        toast.error("Error creating profile: " + profileError.message);
       } else {
         toast.success("Signup successful! Please check your email to confirm.");
         form.reset();
       }
-    } catch (err) {
-      toast.error("Unexpected error: " + err.message);
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (err) {
+    toast.error("Unexpected error: " + err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleGoogleSignup = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
