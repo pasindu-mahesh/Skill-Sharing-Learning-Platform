@@ -10,6 +10,7 @@ import Signup from "./pages/Signup";
 import UserProfile from "./pages/UserProfile";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "@/context/AuthContext";
+import UsersList from "./components/UsersList";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/profile" element={<UserProfile />} />
+            <Route path="/explore" element={<UsersList />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

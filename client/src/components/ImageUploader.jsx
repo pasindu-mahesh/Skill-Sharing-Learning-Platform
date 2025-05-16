@@ -1,45 +1,63 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 const ImageUploader = ({ currentImage, onChange, className = "" }) => {
   const [previewUrl, setPreviewUrl] = useState(currentImage);
   const [isLoading, setIsLoading] = useState(false);
+  const objectUrlRef = useRef(null);
 
-  const handleFileChange = (e) => {
+  // Sync preview with external currentImage changes
+  useEffect(() => {
+    setPreviewUrl(currentImage);
+  }, [currentImage]);
+
+  const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check file size (limit to 5MB)
+    // Validate file
     if (file.size > 5 * 1024 * 1024) {
       toast.error("Image size too large. Please choose an image under 5MB.");
       return;
     }
 
-    // Check file type
     if (!file.type.startsWith("image/")) {
       toast.error("Please select a valid image file.");
       return;
     }
 
     setIsLoading(true);
+    
+    try {
+      // Create temporary preview
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+      }
+      const tempUrl = URL.createObjectURL(file);
+      objectUrlRef.current = tempUrl;
+      setPreviewUrl(tempUrl);
 
-    // In a real app, this is where you'd upload to your storage
-    // For now we'll just create a local preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const imageUrl = reader.result;
-      setPreviewUrl(imageUrl);
-      onChange(imageUrl);
+      // Pass file to parent component for upload
+      await onChange(file);
+
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload image");
+      setPreviewUrl(currentImage); // Revert to original image
+    } finally {
       setIsLoading(false);
-      toast.success("Profile picture updated");
-    };
-    reader.onerror = () => {
-      toast.error("Error reading file");
-      setIsLoading(false);
-    };
-    reader.readAsDataURL(file);
+    }
   };
+
+  // Cleanup object URLs
+  useEffect(() => {
+    return () => {
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className={`relative ${className}`}>
@@ -47,7 +65,7 @@ const ImageUploader = ({ currentImage, onChange, className = "" }) => {
         {previewUrl ? (
           <img 
             src={previewUrl} 
-            alt="Profile" 
+            alt="Profile preview" 
             className="w-full h-full object-cover"
           />
         ) : (
