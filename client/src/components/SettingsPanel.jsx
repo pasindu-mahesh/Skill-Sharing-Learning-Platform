@@ -94,15 +94,15 @@ const SettingsPanel = ({ isOpen, onClose }) => {
   try {
     const accessToken = localStorage.getItem("accessToken");
     const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
+    
     const response = await fetch(
-      `https://ysamcituxmazujhnmuhd.supabase.co/auth/v1/admin/users/${user.id}`,
+      "https://ysamcituxmazujhnmuhd.supabase.co/auth/v1/user", 
       {
-        method: "PUT",
+        method: "PUT", 
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-          apikey: supabaseAnonKey,
+          "Authorization": `Bearer ${accessToken}`, // User's JWT
+          "apikey": supabaseAnonKey // Add this back - it IS needed
         },
         body: JSON.stringify({
           password: passwordData.newPassword
@@ -116,13 +116,15 @@ const SettingsPanel = ({ isOpen, onClose }) => {
     }
 
     toast.success("Password updated successfully!");
-    setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    setPasswordData({ newPassword: "", confirmPassword: "" });
   } catch (error) {
     toast.error(error.message);
   } finally {
     setIsSaving(false);
   }
 };
+
+
 
 
   const handleSaveChanges = async (e) => {
@@ -321,21 +323,7 @@ const SettingsPanel = ({ isOpen, onClose }) => {
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
-
-                <div className="pt-4 border-t flex justify-between">
-                  <Button variant="outline" type="button" onClick={onClose} disabled={isSaving}>Cancel</Button>
-                  <Button type="submit" disabled={isSaving}>
-                    {isSaving ? (
-                      <>
-                        <span className="animate-spin mr-2 h-4 w-4 border-2 border-b-transparent border-white rounded-full"></span>
-                        Saving...
-                      </>
-                    ) : "Save Changes"}
-                  </Button>
-                </div>
-              </form>
-
-              {/* Password Update Form */}
+                  {/* Password Update Form */}
               <form onSubmit={handlePasswordUpdate} className="pt-6 border-t">
                 <Accordion type="single" collapsible>
                   <AccordionItem value="security">
@@ -382,6 +370,20 @@ const SettingsPanel = ({ isOpen, onClose }) => {
                   </AccordionItem>
                 </Accordion>
               </form>
+                <div className="pt-4 border-t flex justify-between">
+                  <Button variant="outline" type="button" onClick={onClose} disabled={isSaving}>Cancel</Button>
+                  <Button type="submit" disabled={isSaving}>
+                    {isSaving ? (
+                      <>
+                        <span className="animate-spin mr-2 h-4 w-4 border-2 border-b-transparent border-white rounded-full"></span>
+                        Saving...
+                      </>
+                    ) : "Save Changes"}
+                  </Button>
+                </div>
+              </form>
+
+              
             </div>
           )}
         </div>

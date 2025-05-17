@@ -12,7 +12,7 @@ import supabase from "@/lib/supabaseClient";
 const UserProfile = () => {
   const { user } = useAuth();
   const [profileData, setProfileData] = useState({
-    profilePictureUrl: "https://images.unsplash.com/photo-1500051638674-ff996a0ec29e",
+    profilePictureUrl: "",
     bio: "",
     firstName: "",
     lastName: "",
@@ -109,7 +109,7 @@ const UserProfile = () => {
     if (profileData.firstName || profileData.lastName) {
       return `${profileData.firstName} ${profileData.lastName}`.trim();
     }
-    return profileData.username || "Anonymous";
+    return profileData.username || "Loading...";
   };
 
   // --- UI ---
@@ -172,7 +172,7 @@ const UserProfile = () => {
               <div className="max-w-2xl">
                 <div className="flex items-center justify-between mb-2">
                   <h2 className="text-lg font-medium">Bio</h2>
-                  {!isEditingBio && (
+                  {/* {!isEditingBio && (
                     <Button
                       variant="ghost"
                       size="sm"
@@ -180,7 +180,7 @@ const UserProfile = () => {
                     >
                       Edit
                     </Button>
-                  )}
+                  )} */}
                 </div>
 
                 {isEditingBio ? (

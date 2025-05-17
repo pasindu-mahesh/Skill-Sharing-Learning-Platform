@@ -57,8 +57,8 @@ public class ProfileController {
             existing.setPhone(profile.getPhone());
             existing.setBio(profile.getBio());
             existing.setWebsite(profile.getWebsite());
-            existing.setFollowers(profile.getFollowers());
-            existing.setFollowing(profile.getFollowing());
+//            existing.setFollowers(profile.getFollowers());
+//            existing.setFollowing(profile.getFollowing());
             existing.setUserId(UUID.fromString(userId));
             Profile updated = service.createOrUpdateProfile(existing);
             return ResponseEntity.ok(updated);
