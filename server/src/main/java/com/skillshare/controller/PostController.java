@@ -56,7 +56,7 @@ public class PostController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
         postService.deletePost(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build(); // better for DELETE
     }
 
     @PostMapping("/{postId}/like")
@@ -68,7 +68,7 @@ public class PostController {
     @DeleteMapping("/{postId}/like")
     public ResponseEntity<Void> unlikePost(@PathVariable Long postId) {
         postService.unlikePost(postId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build(); // consistent with REST
     }
 
     @PostMapping("/{postId}/comments")
@@ -99,6 +99,6 @@ public class PostController {
             @PathVariable Long postId,
             @PathVariable Long commentId) {
         postService.deleteComment(commentId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
-} 
+}
