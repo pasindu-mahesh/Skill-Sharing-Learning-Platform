@@ -1,8 +1,8 @@
 package com.skillshare.controller;
 
+import com.skillshare.dto.PostRequest;
 import com.skillshare.dto.PostResponse;
 import com.skillshare.model.Comment;
-import com.skillshare.model.PostRequest;
 import com.skillshare.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,54 +23,68 @@ public class PostController {
 
     private final PostService postService;
 
+    // ✅ Create a new post
     @PostMapping
     public ResponseEntity<PostResponse> createPost(@Valid @RequestBody PostRequest postRequest) {
-        return ResponseEntity.ok(postService.createPost(postRequest));
+        PostResponse response = postService.createPost(postRequest);
+        return ResponseEntity.ok(response);
     }
 
+    // ✅ Get paginated list of posts
     @GetMapping
     public ResponseEntity<Page<PostResponse>> getAllPosts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return ResponseEntity.ok(postService.getAllPosts(pageable));
+        Page<PostResponse> posts = postService.getAllPosts(pageable);
+        return ResponseEntity.ok(posts);
     }
 
+    // ✅ Get posts for a specific user
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<PostResponse>> getUserPosts(@PathVariable Long userId) {
-        return ResponseEntity.ok(postService.getUserPosts(userId));
+        List<PostResponse> userPosts = postService.getUserPosts(userId);
+        return ResponseEntity.ok(userPosts);
     }
 
+    // ✅ Get a single post by ID
     @GetMapping("/{id}")
     public ResponseEntity<PostResponse> getPost(@PathVariable Long id) {
-        return ResponseEntity.ok(postService.getPost(id));
+        PostResponse post = postService.getPost(id);
+        return ResponseEntity.ok(post);
     }
 
+    // ✅ Update an existing post
     @PutMapping("/{id}")
     public ResponseEntity<PostResponse> updatePost(
             @PathVariable Long id,
             @Valid @RequestBody PostRequest postRequest) {
-        return ResponseEntity.ok(postService.updatePost(id, postRequest));
+        PostResponse updatedPost = postService.updatePost(id, postRequest);
+        return ResponseEntity.ok(updatedPost);
     }
 
+    // ✅ Delete a post
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
         postService.deletePost(id);
-        return ResponseEntity.noContent().build(); // better for DELETE
+        return ResponseEntity.noContent().build();
     }
 
+    // ✅ Like a post
     @PostMapping("/{postId}/like")
     public ResponseEntity<Void> likePost(@PathVariable Long postId) {
         postService.likePost(postId);
         return ResponseEntity.ok().build();
     }
 
+    // ✅ Unlike a post
     @DeleteMapping("/{postId}/like")
     public ResponseEntity<Void> unlikePost(@PathVariable Long postId) {
         postService.unlikePost(postId);
-        return ResponseEntity.noContent().build(); // consistent with REST
+        return ResponseEntity.noContent().build();
     }
 
+    // ✅ Add a comment to a post
     @PostMapping("/{postId}/comments")
     public ResponseEntity<Comment> addComment(
             @PathVariable Long postId,
@@ -79,9 +93,11 @@ public class PostController {
         if (content == null || content.trim().isEmpty()) {
             throw new IllegalArgumentException("Comment content cannot be empty");
         }
-        return ResponseEntity.ok(postService.addComment(postId, content.trim()));
+        Comment comment = postService.addComment(postId, content.trim());
+        return ResponseEntity.ok(comment);
     }
 
+    // ✅ Update a comment
     @PutMapping("/{postId}/comments/{commentId}")
     public ResponseEntity<Comment> updateComment(
             @PathVariable Long postId,
@@ -91,9 +107,11 @@ public class PostController {
         if (content == null || content.trim().isEmpty()) {
             throw new IllegalArgumentException("Comment content cannot be empty");
         }
-        return ResponseEntity.ok(postService.updateComment(commentId, content.trim()));
+        Comment updatedComment = postService.updateComment(commentId, content.trim());
+        return ResponseEntity.ok(updatedComment);
     }
 
+    // ✅ Delete a comment
     @DeleteMapping("/{postId}/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long postId,
