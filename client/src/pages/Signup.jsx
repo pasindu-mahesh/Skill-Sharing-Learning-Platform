@@ -96,20 +96,20 @@ const Signup = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First name</Label>
-                  <Input id="firstName" name="firstName" placeholder="John" required />
+                  <Input id="firstName" name="firstName" placeholder="" required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last name</Label>
-                  <Input id="lastName" name="lastName" placeholder="Doe" required />
+                  <Input id="lastName" name="lastName" placeholder="" required />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
-                <Input id="username" name="username" placeholder="johndoe" required />
+                <Input id="username" name="username" placeholder="" required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" name="email" type="email" placeholder="name@example.com" required />
+                <Input id="email" name="email" type="email" placeholder="name@gmail.com" required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>

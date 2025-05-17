@@ -12,11 +12,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import supabase from "@/lib/supabaseClient";
 
 const SettingsPanel = ({ isOpen, onClose }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate(); // MOVED HERE: at the top level of component
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
@@ -83,49 +88,46 @@ const SettingsPanel = ({ isOpen, onClose }) => {
   };
 
   const handlePasswordUpdate = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (passwordData.newPassword !== passwordData.confirmPassword) {
-    toast.error("New passwords don't match");
-    return;
-  }
-
-  setIsSaving(true);
-  try {
-    const accessToken = localStorage.getItem("accessToken");
-    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-    
-    const response = await fetch(
-      "https://ysamcituxmazujhnmuhd.supabase.co/auth/v1/user", 
-      {
-        method: "PUT", 
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${accessToken}`, // User's JWT
-          "apikey": supabaseAnonKey // Add this back - it IS needed
-        },
-        body: JSON.stringify({
-          password: passwordData.newPassword
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Password update failed");
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error("New passwords don't match");
+      return;
     }
 
-    toast.success("Password updated successfully!");
-    setPasswordData({ newPassword: "", confirmPassword: "" });
-  } catch (error) {
-    toast.error(error.message);
-  } finally {
-    setIsSaving(false);
-  }
-};
+    setIsSaving(true);
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      
+      const response = await fetch(
+        "https://ysamcituxmazujhnmuhd.supabase.co/auth/v1/user", 
+        {
+          method: "PUT", 
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${accessToken}`,
+            "apikey": supabaseAnonKey
+          },
+          body: JSON.stringify({
+            password: passwordData.newPassword
+          }),
+        }
+      );
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Password update failed");
+      }
 
-
+      toast.success("Password updated successfully!");
+      setPasswordData({ newPassword: "", confirmPassword: "" });
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleSaveChanges = async (e) => {
     e.preventDefault();
@@ -163,6 +165,50 @@ const SettingsPanel = ({ isOpen, onClose }) => {
       toast.error("Failed to save changes");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      // NO useNavigate() call here - we use the navigate from above
+
+      // Delete auth user first
+      const authResponse = await fetch(
+        `http://localhost:8080/api/auth/users/${user.id}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
+
+      if (!authResponse.ok) throw new Error("Authentication deletion failed");
+
+      // Delete profile
+      const profileResponse = await fetch(
+        `http://localhost:8080/api/profiles/${user.id}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
+
+      if (!profileResponse.ok) throw new Error("Profile deletion failed");
+
+      // Sign out using Supabase
+      await supabase.auth.signOut();
+      
+      // Clear local data and redirect
+      localStorage.removeItem("accessToken");
+      navigate("/login");
+      toast.success("Account deleted successfully!");
+
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setDeleting(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -323,55 +369,72 @@ const SettingsPanel = ({ isOpen, onClose }) => {
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
-                  {/* Password Update Form */}
-              <form onSubmit={handlePasswordUpdate} className="pt-6 border-t">
-                <Accordion type="single" collapsible>
-                  <AccordionItem value="security">
-                    <AccordionTrigger className="text-lg">Security</AccordionTrigger>
-                    <AccordionContent className="space-y-4 pt-2">
-                      <div className="space-y-2">
-                        <Label htmlFor="currentPassword">Current Password</Label>
-                        <Input
-                          id="currentPassword"
-                          type="password"
-                          value={passwordData.currentPassword}
-                          onChange={handlePasswordChange}
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="newPassword">New Password</Label>
-                        <Input
-                          id="newPassword"
-                          type="password"
-                          value={passwordData.newPassword}
-                          onChange={handlePasswordChange}
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                        <Input
-                          id="confirmPassword"
-                          type="password"
-                          value={passwordData.confirmPassword}
-                          onChange={handlePasswordChange}
-                          required
-                        />
-                      </div>
-                      <Button
-                        type="submit"
-                        disabled={isSaving}
-                        className="w-full bg-primary hover:bg-primary/90 text-white"
-                      >
-                        {isSaving ? "Updating..." : "Update Password"}
-                      </Button>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              </form>
+
+                {/* Password Update Form */}
+                <form onSubmit={handlePasswordUpdate} className="pt-6 border-t">
+                  <Accordion type="single" collapsible>
+                    <AccordionItem value="security">
+                      <AccordionTrigger className="text-lg">Security</AccordionTrigger>
+                      <AccordionContent className="space-y-4 pt-2">
+                        <div className="space-y-2">
+                          <Label htmlFor="currentPassword">Current Password</Label>
+                          <Input
+                            id="currentPassword"
+                            type="password"
+                            value={passwordData.currentPassword}
+                            onChange={handlePasswordChange}
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="newPassword">New Password</Label>
+                          <Input
+                            id="newPassword"
+                            type="password"
+                            value={passwordData.newPassword}
+                            onChange={handlePasswordChange}
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                          <Input
+                            id="confirmPassword"
+                            type="password"
+                            value={passwordData.confirmPassword}
+                            onChange={handlePasswordChange}
+                            required
+                          />
+                        </div>
+                        <Button
+                          type="submit"
+                          disabled={isSaving}
+                          className="w-full bg-primary hover:bg-primary/90 text-white"
+                        >
+                          {isSaving ? "Updating..." : "Update Password"}
+                        </Button>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </form>
+
+                {/* Delete Account Section */}
+                <div className="pt-8 border-t">
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    className="w-full"
+                    onClick={() => setShowDeleteConfirm(true)}
+                    disabled={isSaving}
+                  >
+                    Delete Account
+                  </Button>
+                </div>
+
                 <div className="pt-4 border-t flex justify-between">
-                  <Button variant="outline" type="button" onClick={onClose} disabled={isSaving}>Cancel</Button>
+                  <Button variant="outline" type="button" onClick={onClose} disabled={isSaving}>
+                    Cancel
+                  </Button>
                   <Button type="submit" disabled={isSaving}>
                     {isSaving ? (
                       <>
@@ -382,12 +445,38 @@ const SettingsPanel = ({ isOpen, onClose }) => {
                   </Button>
                 </div>
               </form>
-
-              
             </div>
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+          <div className="bg-background p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <h3 className="text-lg font-semibold mb-3">Confirm Account Deletion</h3>
+            <p className="mb-5 text-sm text-muted-foreground">
+              Are you sure you want to delete your account? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={deleting}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleDeleteAccount}
+                disabled={deleting}
+              >
+                {deleting ? "Deleting..." : "Delete"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

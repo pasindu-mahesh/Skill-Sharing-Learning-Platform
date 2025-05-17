@@ -11,6 +11,8 @@ import UserProfile from "./pages/UserProfile";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "@/context/AuthContext";
 import UsersList from "./components/UsersList";
+import ForgotPassword from "@/pages/ForgotPassword";
+import ResetPassword from "@/pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +30,8 @@ const App = () => (
             <Route path="/signup" element={<Signup />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/explore" element={<UsersList />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
