@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import CommentBox from "./CommentBox"; // Ensure path is correct
 import EmojiPicker from "emoji-picker-react";
 import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
-import { IconButton, Avatar, Typography, Stack, Box, TextField, Button } from "@mui/material";
+import ShareIcon from "@mui/icons-material/Share";
+import { IconButton, Avatar, Typography, Stack, Box, TextField, Button, Tooltip } from "@mui/material";
 
 const PostCard = () => {
   const [showComments, setShowComments] = useState(false);
@@ -59,12 +60,38 @@ const PostCard = () => {
       />
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-4 text-xl px-4 py-2">
+      <div className="flex items-center text-xl px-4 py-2">
         <span role="img" aria-label="heart">❤️</span>
-        <button onClick={handleToggleComments}>
+        <span className="ml-1 mr-4 text-base">1</span>
+        <button onClick={handleToggleComments} className="flex items-center">
           <span role="img" aria-label="comment">💬</span>
         </button>
-        <span role="img" aria-label="send">📤</span>
+        <span className="ml-1 mr-4 text-base">3</span>
+        <span className="flex-grow" />
+        <Tooltip title="Share">
+          <IconButton 
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({
+                  title: 'Check out this post',
+                  text: 'Shared from Skill Sharing App',
+                  url: window.location.href
+                }).catch(console.error);
+              } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link copied to clipboard!');
+              }
+            }}
+            sx={{
+              color: 'inherit',
+              '&:hover': {
+                color: '#1976d2'
+              }
+            }}
+          >
+            <ShareIcon />
+          </IconButton>
+        </Tooltip>
       </div>
 
       {/* Likes */}
