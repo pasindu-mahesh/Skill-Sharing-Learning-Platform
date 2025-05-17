@@ -1,145 +1,114 @@
+// src/components/ProgressForm.jsx
 import { useState } from 'react';
-import { format } from 'date-fns';
 
-const ProgressForm = ({ initialData = {}, onSubmit, isEditing = false }) => {
-  const [formData, setFormData] = useState({
-    title: initialData.title || '',
-    description: initialData.description || '',
-    category: initialData.category || 'Technique',
-    status: initialData.status || 'In Progress',
-    date: initialData.date || format(new Date(), 'yyyy-MM-dd'),
-  });
+const ProgressForm = ({ initialData = {}, onSubmit, userId }) => {
+    const [formData, setFormData] = useState({
+        title: initialData.title || '',
+        description: initialData.description || '',
+        category: initialData.category || 'Photography',
+        status: initialData.status || 'In Progress',
+        userId: userId
+    });
 
-  const categories = [
-    'Technique',
-    'Composition',
-    'Lighting',
-    'Editing',
-    'Equipment',
-    'Portfolio',
-    'Business',
-  ];
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
 
-  const statusOptions = [
-    { value: 'Not Started', label: 'Not Started' },
-    { value: 'In Progress', label: 'In Progress' },
-    { value: 'Completed', label: 'Completed' },
-    { value: 'Mastered', label: 'Mastered' },
-  ];
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSubmit(formData);
+    };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
-
-  return (
-    <div className="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold text-primary-800 mb-6">
-        {isEditing ? 'Edit Progress Update' : 'Add New Progress Update'}
-      </h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="title" className="block text-sm font-medium text-secondary-700 mb-1">
-            Title
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-secondary-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-            required
-          />
-        </div>
-
-        <div className="mb-4">
-          <label htmlFor="description" className="block text-sm font-medium text-secondary-700 mb-1">
-            Description
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            rows="4"
-            className="w-full px-3 py-2 border border-secondary-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-            required
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label htmlFor="category" className="block text-sm font-medium text-secondary-700 mb-1">
-              Category
-            </label>
-            <select
-              id="category"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-secondary-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-            >
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="date" className="block text-sm font-medium text-secondary-700 mb-1">
-              Date
-            </label>
-            <input
-              type="date"
-              id="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-secondary-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-              required
-            />
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-secondary-700 mb-2">Status</label>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            {statusOptions.map((option) => (
-              <div key={option.value} className="flex items-center">
-                <input
-                  type="radio"
-                  id={option.value}
-                  name="status"
-                  value={option.value}
-                  checked={formData.status === option.value}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-primary-600 focus:ring-primary-500"
-                />
-                <label htmlFor={option.value} className="ml-2 text-sm text-secondary-700">
-                  {option.label}
+    return (
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+                <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+                    Title
                 </label>
-              </div>
-            ))}
-          </div>
-        </div>
+                <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleChange}
+                    required
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-persian-indigo focus:ring-persian-indigo"
+                />
+            </div>
 
-        <button
-          type="submit"
-          className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-md transition duration-300"
-        >
-          {isEditing ? 'Update Progress' : 'Add Progress'}
-        </button>
-      </form>
-    </div>
-  );
+            <div>
+                <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                    Description
+                </label>
+                <textarea
+                    id="description"
+                    name="description"
+                    rows={4}
+                    value={formData.description}
+                    onChange={handleChange}
+                    required
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-persian-indigo focus:ring-persian-indigo"
+                />
+            </div>
+
+            <div>
+                <label htmlFor="category" className="block text-sm font-medium text-gray-700">
+                    Category
+                </label>
+                <select
+                    id="category"
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-persian-indigo focus:ring-persian-indigo"
+                >
+                    <option value="Photography">Photography</option>
+                    <option value="Coding">Coding</option>
+                    <option value="Cooking">Cooking</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium text-gray-700">Status</label>
+                <div className="mt-1 space-x-4">
+                    <label className="inline-flex items-center">
+                        <input
+                            type="radio"
+                            name="status"
+                            value="In Progress"
+                            checked={formData.status === 'In Progress'}
+                            onChange={handleChange}
+                            className="text-persian-indigo focus:ring-persian-indigo"
+                        />
+                        <span className="ml-2">In Progress</span>
+                    </label>
+                    <label className="inline-flex items-center">
+                        <input
+                            type="radio"
+                            name="status"
+                            value="Completed"
+                            checked={formData.status === 'Completed'}
+                            onChange={handleChange}
+                            className="text-persian-indigo focus:ring-persian-indigo"
+                        />
+                        <span className="ml-2">Completed</span>
+                    </label>
+                </div>
+            </div>
+
+            <button
+                type="submit"
+                className="inline-flex justify-center rounded-md border border-transparent bg-perano py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-persian-indigo focus:outline-none focus:ring-2 focus:ring-persian-indigo focus:ring-offset-2"
+            >
+                {initialData.id ? 'Update' : 'Create'} Progress Update
+            </button>
+        </form>
+    );
 };
 
 export default ProgressForm;
