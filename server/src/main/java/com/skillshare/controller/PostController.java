@@ -26,8 +26,7 @@ public class PostController {
     // ✅ Create a new post
     @PostMapping
     public ResponseEntity<PostResponse> createPost(@Valid @RequestBody PostRequest postRequest) {
-        PostResponse response = postService.createPost(postRequest);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(postService.createPost(postRequest));
     }
 
     // ✅ Get paginated list of posts
@@ -36,22 +35,19 @@ public class PostController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<PostResponse> posts = postService.getAllPosts(pageable);
-        return ResponseEntity.ok(posts);
+        return ResponseEntity.ok(postService.getAllPosts(pageable));
     }
 
     // ✅ Get posts for a specific user
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<PostResponse>> getUserPosts(@PathVariable Long userId) {
-        List<PostResponse> userPosts = postService.getUserPosts(userId);
-        return ResponseEntity.ok(userPosts);
+        return ResponseEntity.ok(postService.getUserPosts(userId));
     }
 
     // ✅ Get a single post by ID
     @GetMapping("/{id}")
     public ResponseEntity<PostResponse> getPost(@PathVariable Long id) {
-        PostResponse post = postService.getPost(id);
-        return ResponseEntity.ok(post);
+        return ResponseEntity.ok(postService.getPost(id));
     }
 
     // ✅ Update an existing post
@@ -59,8 +55,7 @@ public class PostController {
     public ResponseEntity<PostResponse> updatePost(
             @PathVariable Long id,
             @Valid @RequestBody PostRequest postRequest) {
-        PostResponse updatedPost = postService.updatePost(id, postRequest);
-        return ResponseEntity.ok(updatedPost);
+        return ResponseEntity.ok(postService.updatePost(id, postRequest));
     }
 
     // ✅ Delete a post
@@ -91,10 +86,9 @@ public class PostController {
             @RequestBody Map<String, String> request) {
         String content = request.get("content");
         if (content == null || content.trim().isEmpty()) {
-            return ResponseEntity.badRequest().build(); // safer than throwing exception
+            return ResponseEntity.badRequest().body(null);
         }
-        Comment comment = postService.addComment(postId, content.trim());
-        return ResponseEntity.ok(comment);
+        return ResponseEntity.ok(postService.addComment(postId, content.trim()));
     }
 
     // ✅ Update a comment
@@ -105,10 +99,9 @@ public class PostController {
             @RequestBody Map<String, String> request) {
         String content = request.get("content");
         if (content == null || content.trim().isEmpty()) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(null);
         }
-        Comment updatedComment = postService.updateComment(commentId, content.trim());
-        return ResponseEntity.ok(updatedComment);
+        return ResponseEntity.ok(postService.updateComment(commentId, content.trim()));
     }
 
     // ✅ Delete a comment
