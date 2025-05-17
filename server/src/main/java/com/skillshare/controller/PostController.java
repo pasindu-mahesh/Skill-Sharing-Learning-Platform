@@ -84,11 +84,8 @@ public class PostController {
     public ResponseEntity<Comment> addComment(
             @PathVariable Long postId,
             @RequestBody Map<String, String> request) {
-        String content = request.get("content");
-        if (content == null || content.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body(null);
-        }
-        return ResponseEntity.ok(postService.addComment(postId, content.trim()));
+        return handleCommentInput(request, content ->
+                ResponseEntity.ok(postService.addComment(postId, content)));
     }
 
     // ✅ Update a comment
@@ -97,11 +94,8 @@ public class PostController {
             @PathVariable Long postId,
             @PathVariable Long commentId,
             @RequestBody Map<String, String> request) {
-        String content = request.get("content");
-        if (content == null || content.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body(null);
-        }
-        return ResponseEntity.ok(postService.updateComment(commentId, content.trim()));
+        return handleCommentInput(request, content ->
+                ResponseEntity.ok(postService.updateComment(commentId, content)));
     }
 
     // ✅ Delete a comment
@@ -111,5 +105,15 @@ public class PostController {
             @PathVariable Long commentId) {
         postService.deleteComment(commentId);
         return ResponseEntity.noContent().build();
+    }
+
+    // 🔁 Helper method to validate and extract comment content
+    private ResponseEntity<Comment> handleCommentInput(Map<String, String> request,
+                                                       java.util.function.Function<String, ResponseEntity<Comment>> action) {
+        String content = request.get("content");
+        if (content == null || content.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        return action.apply(content.trim());
     }
 }
