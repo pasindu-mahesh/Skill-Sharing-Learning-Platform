@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -109,7 +110,7 @@ public class PostController {
 
     // 🔁 Helper method to validate and extract comment content
     private ResponseEntity<Comment> handleCommentInput(Map<String, String> request,
-                                                       java.util.function.Function<String, ResponseEntity<Comment>> action) {
+                                                       Function<String, ResponseEntity<Comment>> action) {
         String content = request.get("content");
         if (content == null || content.trim().isEmpty()) {
             return ResponseEntity.badRequest().body(null);
