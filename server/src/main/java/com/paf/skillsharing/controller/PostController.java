@@ -27,6 +27,7 @@ public class PostController {
             post.setId(null); // Ensure ID is null for new posts
             return postService.savePost(post);
         } catch (ExecutionException | InterruptedException e) {
+            Thread.currentThread().interrupt(); // Restore interrupt status
             e.printStackTrace();
             return "Error creating post: " + e.getMessage();
         }
@@ -39,6 +40,7 @@ public class PostController {
             post.setId(id); // Set the ID from URL to update the right doc
             return postService.savePost(post);
         } catch (ExecutionException | InterruptedException e) {
+            Thread.currentThread().interrupt();
             e.printStackTrace();
             return "Error updating post: " + e.getMessage();
         }
@@ -50,6 +52,7 @@ public class PostController {
         try {
             return postService.getAllPosts();
         } catch (ExecutionException | InterruptedException e) {
+            Thread.currentThread().interrupt();
             e.printStackTrace();
             return List.of(); // return empty list on error
         }
@@ -61,6 +64,7 @@ public class PostController {
         try {
             return postService.getPostById(id);
         } catch (ExecutionException | InterruptedException e) {
+            Thread.currentThread().interrupt();
             e.printStackTrace();
             return null;
         }
