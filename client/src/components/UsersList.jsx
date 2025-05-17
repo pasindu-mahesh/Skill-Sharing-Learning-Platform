@@ -42,7 +42,7 @@ const UsersList = () => {
   if (loading) return <div className="text-center py-10 text-lg">Loading users...</div>;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-primary/10 to-secondary/30">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-primary/10 to-secondary/30 pt-12">
       <div className="w-full max-w-2xl flex flex-col items-center p-4">
         {/* Search Bar */}
         <div className="w-full mb-6">

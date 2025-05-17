@@ -87,47 +87,52 @@ const SettingsPanel = ({ isOpen, onClose }) => {
     setPasswordData(prev => ({ ...prev, [id]: value }));
   };
 
-  const handlePasswordUpdate = async (e) => {
-    e.preventDefault();
+const handlePasswordUpdate = async (e) => {
+  e.preventDefault();
 
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error("New passwords don't match");
-      return;
+  if (passwordData.newPassword !== passwordData.confirmPassword) {
+    toast.error("New passwords don't match");
+    return;
+  }
+
+  setIsSaving(true);
+  try {
+    const accessToken = localStorage.getItem("accessToken");
+    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+    if (!accessToken || !supabaseAnonKey) {
+      throw new Error("Missing access token or API key");
     }
 
-    setIsSaving(true);
-    try {
-      const accessToken = localStorage.getItem("accessToken");
-      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-      
-      const response = await fetch(
-        "https://ysamcituxmazujhnmuhd.supabase.co/auth/v1/user", 
-        {
-          method: "PUT", 
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${accessToken}`,
-            "apikey": supabaseAnonKey
-          },
-          body: JSON.stringify({
-            password: passwordData.newPassword
-          }),
-        }
-      );
+    const response = await fetch("https://ysamcituxmazujhnmuhd.supabase.co/auth/v1/user", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+        apikey: supabaseAnonKey,
+      },
+      body: JSON.stringify({ password: passwordData.newPassword }),
+    });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Password update failed");
-      }
+    const data = await response.json();
 
-      toast.success("Password updated successfully!");
-      setPasswordData({ newPassword: "", confirmPassword: "" });
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setIsSaving(false);
+    if (!response.ok) {
+      throw new Error(data?.message || data?.error_description || "Failed to update password");
     }
-  };
+
+    toast.success("Password updated successfully!");
+    setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+  } catch (error) {
+    console.error("Password update error:", error);
+    toast.error(error.message);
+  } finally {
+    setIsSaving(false);
+  }
+};
+
+
+
+
 
   const handleSaveChanges = async (e) => {
     e.preventDefault();
@@ -169,48 +174,48 @@ const SettingsPanel = ({ isOpen, onClose }) => {
   };
 
   const handleDeleteAccount = async () => {
-    setDeleting(true);
-    try {
-      const accessToken = localStorage.getItem("accessToken");
-      // NO useNavigate() call here - we use the navigate from above
+  setDeleting(true);
+  try {
+    const accessToken = localStorage.getItem("accessToken");
 
-      // Delete auth user first
-      const authResponse = await fetch(
-        `http://localhost:8080/api/auth/users/${user.id}`,
-        {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }
-      );
+    // Delete profile first to avoid foreign key constraint error
+    const profileResponse = await fetch(
+      `http://localhost:8080/api/profiles/${user.id}`,
+      {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
 
-      if (!authResponse.ok) throw new Error("Authentication deletion failed");
+    if (!profileResponse.ok) throw new Error("Profile deletion failed");
 
-      // Delete profile
-      const profileResponse = await fetch(
-        `http://localhost:8080/api/profiles/${user.id}`,
-        {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }
-      );
+    // Then delete auth user
+    const authResponse = await fetch(
+      `http://localhost:8080/api/auth/users/${user.id}`,
+      {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
 
-      if (!profileResponse.ok) throw new Error("Profile deletion failed");
+    if (!authResponse.ok) throw new Error("Authentication deletion failed");
 
-      // Sign out using Supabase
-      await supabase.auth.signOut();
-      
-      // Clear local data and redirect
-      localStorage.removeItem("accessToken");
-      navigate("/login");
-      toast.success("Account deleted successfully!");
+    // Sign out using Supabase
+    await supabase.auth.signOut();
 
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setDeleting(false);
-      setShowDeleteConfirm(false);
-    }
-  };
+    // Clear local data and redirect
+    localStorage.removeItem("accessToken");
+    navigate("/login");
+    toast.success("Account deleted successfully!");
+
+  } catch (error) {
+    toast.error(error.message);
+  } finally {
+    setDeleting(false);
+    setShowDeleteConfirm(false);
+  }
+};
+
 
   if (!isOpen) return null;
 
@@ -406,8 +411,9 @@ const SettingsPanel = ({ isOpen, onClose }) => {
                             required
                           />
                         </div>
-                        <Button
-                          type="submit"
+                       <Button
+                          type="button"        // Change to button to prevent form submit bubbling
+                          onClick={handlePasswordUpdate}
                           disabled={isSaving}
                           className="w-full bg-primary hover:bg-primary/90 text-white"
                         >
