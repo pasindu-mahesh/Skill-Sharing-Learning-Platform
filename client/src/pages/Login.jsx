@@ -19,14 +19,27 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        navigate("/"); // If already logged in, redirect to home
-      }
-    };
-    checkSession();
-  }, [navigate]);
+  // Check current session on mount
+  supabase.auth.getSession().then(({ data }) => {
+    if (data.session) {
+      localStorage.setItem("accessToken", data.session.access_token);
+      navigate("/");
+    }
+  });
+
+  // Listen for auth state changes (including OAuth sign in)
+  const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      localStorage.setItem("accessToken", session.access_token);
+      navigate("/");
+    }
+  });
+
+  return () => {
+    authListener.subscription.unsubscribe();
+  };
+}, [navigate]);
+
 
   const handleLogin = async (e) => {
     e.preventDefault();

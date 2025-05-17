@@ -3,6 +3,7 @@ package com.server.server.service;
 import com.server.server.entity.UserFollow;
 import com.server.server.repository.UserFollowRepository;
 import com.server.server.repository.ProfileRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,22 +24,30 @@ public class UserFollowService {
 
     @Transactional
     public boolean followUser(UUID followerId, UUID followingId) {
+        // Prevent self-follow
         if (followerId.equals(followingId)) {
-            return false; // Cannot follow yourself
+            return false;
         }
+
+        // Check existing relationship first
         if (followRepo.existsByFollowerIdAndFollowingId(followerId, followingId)) {
-            return false; // Already following
+            return false;
         }
 
-        // Create new follow relationship
-        UserFollow userFollow = new UserFollow(followerId, followingId);
-        followRepo.save(userFollow);
+        try {
+            // Create and save new relationship
+            UserFollow userFollow = new UserFollow(followerId, followingId);
+            followRepo.save(userFollow);
 
-        // Use correct method names here
-        profileRepo.incrementFollowing(followerId);
-        profileRepo.incrementFollowers(followingId);
+            // Update counts only after successful save
+//            profileRepo.incrementFollowing(followerId);
+//            profileRepo.incrementFollowers(followingId);
 
-        return true;
+            return true;
+        } catch (DataIntegrityViolationException e) {
+            // Handle concurrent requests that might pass the initial exists check
+            return false;
+        }
     }
 
     @Transactional
@@ -50,9 +59,9 @@ public class UserFollowService {
         // Remove follow relationship
         followRepo.deleteByFollowerIdAndFollowingId(followerId, followingId);
 
-        // Use correct method names here
-        profileRepo.decrementFollowing(followerId);
-        profileRepo.decrementFollowers(followingId);
+        // Use wrong method names here
+//        profileRepo.decrementFollowing(followerId);
+//        profileRepo.decrementFollowers(followingId);
 
         return true;
     }

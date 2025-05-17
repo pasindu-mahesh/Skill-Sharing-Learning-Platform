@@ -1,9 +1,11 @@
 import React from "react";
+import { useNavigate } from "react-router-dom"; // <-- Added
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 
 const UserCard = ({ user }) => {
+  const navigate = useNavigate(); // <-- Added
   const { user: currentUser } = useAuth();
   const [isFollowing, setIsFollowing] = React.useState(false);
   const [isProcessing, setIsProcessing] = React.useState(false);
@@ -50,12 +52,14 @@ const UserCard = ({ user }) => {
         throw new Error(errorData.message || `Failed to ${action}`);
       }
       setIsFollowing(action === "follow");
-      toast.success(action === "follow" 
-        ? `Following ${user.username}` 
-        : `Unfollowed ${user.username}`);
+      toast.success(
+        action === "follow"
+          ? `Following ${user.username}`
+          : `Unfollowed ${user.username}`
+      );
     } catch (error) {
       toast.error(error.message);
-      setIsFollowing(prev => !prev);
+      setIsFollowing((prev) => !prev);
     } finally {
       setIsProcessing(false);
     }
@@ -75,7 +79,10 @@ const UserCard = ({ user }) => {
   }
 
   return (
-    <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-md mb-6 mx-auto w-full max-w-xl flex items-center gap-6 p-6 hover:shadow-xl transition-shadow border border-zinc-100 dark:border-zinc-800">
+    <div
+      className="bg-white dark:bg-zinc-900 rounded-2xl shadow-md mb-6 mx-auto w-full max-w-xl flex items-center gap-6 p-6 hover:shadow-xl transition-shadow border border-zinc-100 dark:border-zinc-800 cursor-pointer"
+      onClick={() => navigate(`/user/${user.id}`)} // <-- Card navigation
+    >
       <div className="relative">
         <img
           src={user.profilePictureUrl || "/default-avatar.png"}
@@ -94,13 +101,18 @@ const UserCard = ({ user }) => {
           <span className="text-xs text-muted-foreground truncate">@{user.username}</span>
         </div>
         {user.bio && (
-          <p className="text-sm text-zinc-600 dark:text-zinc-300 mt-1 truncate">{user.bio}</p>
+          <p className="text-sm text-zinc-600 dark:text-zinc-300 mt-1 truncate">
+            {user.bio}
+          </p>
         )}
       </div>
       {currentUser?.id !== user.id && (
         <Button
           variant={isFollowing ? "secondary" : "default"}
-          onClick={() => handleFollowAction(isFollowing ? "unfollow" : "follow")}
+          onClick={(e) => {
+            e.stopPropagation(); // <-- Prevent navigation when clicking button
+            handleFollowAction(isFollowing ? "unfollow" : "follow");
+          }}
           disabled={isProcessing}
           size="lg"
           className={`rounded-full px-6 font-semibold transition-all duration-200 ${
