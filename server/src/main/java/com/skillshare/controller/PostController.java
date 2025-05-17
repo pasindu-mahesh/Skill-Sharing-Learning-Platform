@@ -24,85 +24,86 @@ public class PostController {
 
     private final PostService postService;
 
-    // Create a new post
+    // ✅ Create a new post
     @PostMapping
     public ResponseEntity<PostResponse> createPost(@Valid @RequestBody PostRequest postRequest) {
-        PostResponse createdPost = postService.createPost(postRequest);
-        return ResponseEntity.ok(createdPost);
+        return ResponseEntity.ok(postService.createPost(postRequest));
     }
 
-    // Get paginated posts
+    // ✅ Get paginated posts
     @GetMapping
     public ResponseEntity<Page<PostResponse>> getAllPosts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<PostResponse> posts = postService.getAllPosts(pageable);
-        return ResponseEntity.ok(posts);
+        return ResponseEntity.ok(postService.getAllPosts(pageable));
     }
 
-    // Get posts by user
+    // ✅ Get posts by a specific user
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<PostResponse>> getUserPosts(@PathVariable Long userId) {
-        List<PostResponse> userPosts = postService.getUserPosts(userId);
-        return ResponseEntity.ok(userPosts);
+        return ResponseEntity.ok(postService.getUserPosts(userId));
     }
 
-    // Get single post
+    // ✅ Get a single post by ID
     @GetMapping("/{id}")
     public ResponseEntity<PostResponse> getPost(@PathVariable Long id) {
-        PostResponse post = postService.getPost(id);
-        return ResponseEntity.ok(post);
+        return ResponseEntity.ok(postService.getPost(id));
     }
 
-    // Update post
+    // ✅ Update a post
     @PutMapping("/{id}")
     public ResponseEntity<PostResponse> updatePost(
             @PathVariable Long id,
             @Valid @RequestBody PostRequest postRequest) {
-        PostResponse updatedPost = postService.updatePost(id, postRequest);
-        return ResponseEntity.ok(updatedPost);
+        return ResponseEntity.ok(postService.updatePost(id, postRequest));
     }
 
-    // Delete post
+    // ✅ Delete a post
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
         postService.deletePost(id);
         return ResponseEntity.noContent().build();
     }
 
-    // Like post
+    // ✅ Like a post
     @PostMapping("/{postId}/like")
     public ResponseEntity<Void> likePost(@PathVariable Long postId) {
         postService.likePost(postId);
         return ResponseEntity.ok().build();
     }
 
-    // Unlike post
+    // ✅ Unlike a post
     @DeleteMapping("/{postId}/like")
     public ResponseEntity<Void> unlikePost(@PathVariable Long postId) {
         postService.unlikePost(postId);
         return ResponseEntity.noContent().build();
     }
 
-    // Add comment
+    // ✅ Add a comment to a post
     @PostMapping("/{postId}/comments")
     public ResponseEntity<Comment> addComment(
             @PathVariable Long postId,
             @RequestBody Map<String, String> request) {
-        return handleCommentInput(request, content -> ResponseEntity.ok(postService.addComment(postId, content)));
+        return handleCommentInput(
+                request,
+                content -> ResponseEntity.ok(postService.addComment(postId, content))
+        );
     }
 
-    // Update comment
+    // ✅ Update a comment
     @PutMapping("/{postId}/comments/{commentId}")
     public ResponseEntity<Comment> updateComment(
             @PathVariable Long postId,
             @PathVariable Long commentId,
             @RequestBody Map<String, String> request) {
-        return handleCommentInput(request, content -> ResponseEntity.ok(postService.updateComment(commentId, content)));
+        return handleCommentInput(
+                request,
+                content -> ResponseEntity.ok(postService.updateComment(commentId, content))
+        );
     }
 
-    // Delete comment
+    // ✅ Delete a comment
     @DeleteMapping("/{postId}/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long postId,
@@ -111,11 +112,14 @@ public class PostController {
         return ResponseEntity.noContent().build();
     }
 
-    // Utility to validate comment input
-    private ResponseEntity<Comment> handleCommentInput(Map<String, String> request,
-                                                       Function<String, ResponseEntity<Comment>> action) {
+    // ✅ Utility: validate and extract comment content
+    private ResponseEntity<Comment> handleCommentInput(
+            Map<String, String> request,
+            Function<String, ResponseEntity<Comment>> action) {
+
         String content = request.get("content");
         if (content == null || content.trim().isEmpty()) {
+            // You can later improve this to return a custom error message object
             return ResponseEntity.badRequest().body(null);
         }
         return action.apply(content.trim());
