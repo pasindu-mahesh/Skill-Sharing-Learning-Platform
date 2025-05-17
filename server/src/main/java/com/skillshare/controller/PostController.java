@@ -91,7 +91,7 @@ public class PostController {
             @RequestBody Map<String, String> request) {
         String content = request.get("content");
         if (content == null || content.trim().isEmpty()) {
-            throw new IllegalArgumentException("Comment content cannot be empty");
+            return ResponseEntity.badRequest().build(); // safer than throwing exception
         }
         Comment comment = postService.addComment(postId, content.trim());
         return ResponseEntity.ok(comment);
@@ -105,7 +105,7 @@ public class PostController {
             @RequestBody Map<String, String> request) {
         String content = request.get("content");
         if (content == null || content.trim().isEmpty()) {
-            throw new IllegalArgumentException("Comment content cannot be empty");
+            return ResponseEntity.badRequest().build();
         }
         Comment updatedComment = postService.updateComment(commentId, content.trim());
         return ResponseEntity.ok(updatedComment);
