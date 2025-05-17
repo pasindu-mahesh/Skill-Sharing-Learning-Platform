@@ -1,8 +1,8 @@
 package com.skillshare.controller;
 
-import com.skillshare.dto.PostRequest;
 import com.skillshare.dto.PostResponse;
 import com.skillshare.model.Comment;
+import com.skillshare.model.PostRequest;
 import com.skillshare.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
