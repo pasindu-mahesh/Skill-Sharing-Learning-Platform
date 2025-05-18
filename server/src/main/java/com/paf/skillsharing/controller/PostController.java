@@ -3,6 +3,7 @@ package com.paf.skillsharing.controller;
 import com.paf.skillsharing.model.Post;
 import com.paf.skillsharing.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/posts")
-@CrossOrigin(origins = "*") // Allow cross-origin requests (for frontend React app)
+@CrossOrigin(origins = "*")
 public class PostController {
 
     private final PostService postService;
@@ -22,62 +23,66 @@ public class PostController {
 
     // ✅ CREATE Post
     @PostMapping
-    public String createPost(@RequestBody Post post) {
+    public ResponseEntity<String> createPost(@RequestBody Post post) {
         try {
             post.setId(null); // Ensure ID is null for new posts
-            return postService.savePost(post);
+            String result = postService.savePost(post);
+            return ResponseEntity.ok(result);
         } catch (ExecutionException | InterruptedException e) {
-            Thread.currentThread().interrupt(); // Restore interrupt status
-            e.printStackTrace();
-            return "Error creating post: " + e.getMessage();
+            Thread.currentThread().interrupt();
+            return ResponseEntity.internalServerError().body("Error creating post: " + e.getMessage());
         }
     }
 
     // ✅ UPDATE Post
     @PutMapping("/{id}")
-    public String updatePost(@PathVariable String id, @RequestBody Post post) {
+    public ResponseEntity<String> updatePost(@PathVariable String id, @RequestBody Post post) {
         try {
-            post.setId(id); // Set the ID from URL to update the right doc
-            return postService.savePost(post);
+            post.setId(id);
+            String result = postService.savePost(post);
+            return ResponseEntity.ok(result);
         } catch (ExecutionException | InterruptedException e) {
             Thread.currentThread().interrupt();
-            e.printStackTrace();
-            return "Error updating post: " + e.getMessage();
+            return ResponseEntity.internalServerError().body("Error updating post: " + e.getMessage());
         }
     }
 
     // 📥 Get all Posts
     @GetMapping
-    public List<Post> getAllPosts() {
+    public ResponseEntity<List<Post>> getAllPosts() {
         try {
-            return postService.getAllPosts();
+            List<Post> posts = postService.getAllPosts();
+            return ResponseEntity.ok(posts);
         } catch (ExecutionException | InterruptedException e) {
             Thread.currentThread().interrupt();
-            e.printStackTrace();
-            return List.of(); // return empty list on error
+            return ResponseEntity.internalServerError().body(List.of());
         }
     }
 
     // 🔍 Get a single Post by ID
     @GetMapping("/{id}")
-    public Post getPostById(@PathVariable String id) {
+    public ResponseEntity<Post> getPostById(@PathVariable String id) {
         try {
-            return postService.getPostById(id);
+            Post post = postService.getPostById(id);
+            if (post != null) {
+                return ResponseEntity.ok(post);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
         } catch (ExecutionException | InterruptedException e) {
             Thread.currentThread().interrupt();
-            e.printStackTrace();
-            return null;
+            return ResponseEntity.internalServerError().build();
         }
     }
 
-    // ❌ Delete a Post
+    // ❌ DELETE a Post
     @DeleteMapping("/{id}")
-    public String deletePost(@PathVariable String id) {
+    public ResponseEntity<String> deletePost(@PathVariable String id) {
         try {
-            return postService.deletePost(id);
+            String result = postService.deletePost(id);
+            return ResponseEntity.ok(result);
         } catch (Exception e) {
-            e.printStackTrace();
-            return "Error deleting post: " + e.getMessage();
+            return ResponseEntity.internalServerError().body("Error deleting post: " + e.getMessage());
         }
     }
 }
